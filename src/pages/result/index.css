@@ -1,0 +1,68 @@
+/* 结果页样式 */
+
+/* 卡片通用阴影 */
+.card-self,
+.card-friend,
+.card-traits {
+  background: #fafafa;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.03);
+}
+
+/* 词云容器 */
+.word-cloud-container {
+  padding: 12px;
+  box-sizing: border-box;
+}
+
+/* 词语项 */
+.word-item {
+  white-space: nowrap;
+  line-height: 1;
+  padding: 4px 2px;
+}
+
+/* 解释气泡 */
+.word-desc-bubble {
+  background: #1f2937;
+  border-radius: 12px;
+  padding: 8px 16px;
+  max-width: 70%;
+  animation: bubbleIn 0.2s ease-out;
+}
+
+.word-desc-bubble Text {
+  color: #f9fafb !important;
+}
+
+@keyframes bubbleIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+/* 入场动画 */
+.card-self {
+  animation: fadeSlideUp 0.5s ease-out both;
+}
+.card-friend {
+  animation: fadeSlideUp 0.5s ease-out 0.1s both;
+}
+.card-traits {
+  animation: fadeSlideUp 0.5s ease-out 0.2s both;
+}
+
+@keyframes fadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
