@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from '@/app.module';
 import * as express from 'express';
+import { resolve } from 'node:path';
 import { HttpStatusInterceptor } from '@/interceptors/http-status.interceptor';
 
 function parsePort(): number {
@@ -23,6 +24,8 @@ async function bootstrap() {
     credentials: true,
   });
   app.setGlobalPrefix('api');
+  // Serve the production H5 app and API from one origin on a Node host.
+  app.use(express.static(resolve(__dirname, '../../dist-web')));
   app.use(express.json({ limit: '50mb' }));
   app.use(express.urlencoded({ limit: '50mb', extended: true }));
 

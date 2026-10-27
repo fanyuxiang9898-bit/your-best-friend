@@ -118,7 +118,8 @@ export default function ResultPage() {
         <Button className="w-full" onClick={async () => {
           try { await Taro.setClipboardData({ data: formatResultSummary(result) }); }
           catch { Taro.showToast({ title: '复制失败，请重试', icon: 'none' }); }
-        }}><Text>复制我的结果</Text></Button>
+        }}
+        ><Text>复制我的结果</Text></Button>
         <Text className="block mt-3 text-xs text-gray-400">仅供自我探索与娱乐，不代表心理诊断。</Text>
       </View>
       {/* ── 重新测试 ── */}
