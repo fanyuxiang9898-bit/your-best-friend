@@ -1,18 +1,22 @@
 import { View, Text } from '@tarojs/components';
 import Taro from '@tarojs/taro';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { getResult, clearResult, type PersonaResult, type WordItem } from '@/data/quiz-store';
 import { Button } from '@/components/ui/button';
+import { formatResultSummary } from '@/data/result-summary';
 import './index.css';
 
 export default function ResultPage() {
   const result: PersonaResult | null = getResult();
   const [activeWord, setActiveWord] = useState<WordItem | null>(null);
 
+  const wordTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => () => { if (wordTimer.current) clearTimeout(wordTimer.current); }, []);
+
   if (!result) {
     return (
       <View className="result-page bg-white min-h-screen flex items-center justify-center">
-        <Text className="block text-gray-400 text-sm">暂无结果</Text>
+        <View className="flex flex-col gap-4"><Text className="block text-gray-400 text-sm">暂无结果，请先完成测试</Text><Button onClick={() => Taro.reLaunch({ url: '/pages/index/index' })}><Text>开始测试</Text></Button></View>
       </View>
     );
   }
@@ -21,12 +25,13 @@ export default function ResultPage() {
 
   const handleWordTap = (w: WordItem) => {
     setActiveWord(w);
-    setTimeout(() => setActiveWord(null), 2500);
+    if (wordTimer.current) clearTimeout(wordTimer.current);
+    wordTimer.current = setTimeout(() => setActiveWord(null), 2500);
   };
 
   const handleRetry = () => {
     clearResult();
-    Taro.navigateBack();
+    Taro.reLaunch({ url: '/pages/index/index' });
   };
 
   // 1000×1000 画布 → 实际渲染按比例缩放
@@ -109,6 +114,13 @@ export default function ResultPage() {
         </View>
       </View>
 
+      <View className="px-6 pt-4">
+        <Button className="w-full" onClick={async () => {
+          try { await Taro.setClipboardData({ data: formatResultSummary(result) }); }
+          catch { Taro.showToast({ title: '复制失败，请重试', icon: 'none' }); }
+        }}><Text>复制我的结果</Text></Button>
+        <Text className="block mt-3 text-xs text-gray-400">仅供自我探索与娱乐，不代表心理诊断。</Text>
+      </View>
       {/* ── 重新测试 ── */}
       <View className="px-6 pt-4 pb-12">
         <Button variant="outline" className="w-full" onClick={handleRetry}>

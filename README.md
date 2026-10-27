@@ -1,3 +1,12 @@
+## 2026-10 maintenance
+
+- During the quiz, **上一题** returns to the prior question and shows the previous A/B answer. Choosing again replaces that answer before submission.
+- Results include **复制我的结果**, a readable summary copied only when requested.
+- **重新测试** opens a fresh questionnaire; a result page opened without cached data provides a start action.
+- Duplicate final submissions are guarded; word-tooltip timers are replaced and cleaned up on unmount.
+- Answers/results remain in memory, as before; refreshing does not persist personal results.
+- Run `pnpm test:unit` with Node 24+. H5/WeChat builds and real API execution require the original locked dependencies and service configuration.
+
 # Coze Mini Program
 
 这是一个基于 [Taro 4](https://docs.taro.zone/docs/) + [Nest.js](https://nestjs.com/) 的前后端分离项目，由扣子编程 CLI 创建。

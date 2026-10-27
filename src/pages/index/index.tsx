@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { View, Text } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import { Button } from '@/components/ui/button';
@@ -12,6 +12,7 @@ import './index.css';
 type Step = 'intro' | 'quiz' | 'calculating';
 
 export default function IndexPage() {
+  const submittingRef = useRef(false);
   const [step, setStep] = useState<Step>('intro');
   const [currentQ, setCurrentQ] = useState(0);
   const [answers, setLocalAnswers] = useState<Record<number, 'A' | 'B'>>({});
@@ -25,6 +26,7 @@ export default function IndexPage() {
   }, []);
 
   const handleAnswer = useCallback(async (key: 'A' | 'B') => {
+    if (submittingRef.current) return;
     const questionId = QUESTIONS[currentQ].id;
     const newAnswers = { ...answers, [questionId]: key };
     setLocalAnswers(newAnswers);
@@ -35,6 +37,7 @@ export default function IndexPage() {
       setAnimKey(prev => prev + 1);
     } else {
       // 答完，开始计算
+      submittingRef.current = true;
       saveAnswers(newAnswers);
       setStep('calculating');
 
@@ -60,7 +63,8 @@ export default function IndexPage() {
 
         if (resultData && resultData.title) {
           saveResult(resultData);
-          Taro.navigateTo({ url: '/pages/result/index' });
+          setStep('quiz');
+          await Taro.navigateTo({ url: '/pages/result/index' });
         } else {
           Taro.showToast({ title: '正在生成中，请稍后再试', icon: 'none', duration: 2000 });
           setTimeout(() => setStep('quiz'), 2000);
@@ -68,7 +72,9 @@ export default function IndexPage() {
       } catch (err) {
         console.error('[Quiz] API error:', err);
         Taro.showToast({ title: '网络有点慢，请重试', icon: 'none', duration: 2000 });
-        setTimeout(() => setStep('quiz'), 2000);
+        setStep('quiz');
+      } finally {
+        submittingRef.current = false;
       }
     }
   }, [currentQ, answers]);
@@ -135,18 +141,24 @@ export default function IndexPage() {
         </View>
       </View>
 
+      <View className="px-6 pb-4">
+        <Button variant="outline" disabled={currentQ === 0} onClick={() => { setCurrentQ(q => Math.max(0, q - 1)); setAnimKey(k => k + 1); }}>
+          <Text>上一题</Text>
+        </Button>
+        {answers[question.id] && <Text className="block mt-2 text-sm text-gray-500">上次选择：{answers[question.id]} · 可重新选择</Text>}
+      </View>
       {/* 选项 */}
       <View className="px-6 pb-12 gap-4 flex flex-col" key={`options-${animKey}`}>
         {question.options.map((opt) => (
-          <View
+          <Button
+            variant="outline"
             key={opt.key}
-            className="quiz-option rounded-2xl border-2 border-gray-200 bg-white p-5 flex flex-col active:border-purple-400"
+            className="quiz-option h-auto whitespace-normal rounded-2xl border-2 border-gray-200 bg-white p-5 flex flex-col active:border-purple-400"
             onClick={() => handleAnswer(opt.key)}
-            hoverClass="border-purple-400"
           >
             <Text className="block text-lg font-semibold text-gray-800 mb-1">{opt.text}</Text>
             <Text className="block text-sm text-gray-400">{opt.subText}</Text>
-          </View>
+          </Button>
         ))}
       </View>
     </View>
