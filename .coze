@@ -13,6 +13,6 @@ pack = [ "bash", ".cozeproj/scripts/pack.sh" ]
 validate = [ "bash", ".cozeproj/scripts/validate.sh" ]
 
 [deploy]
-build = [ "bash", ".cozeproj/scripts/deploy_build.sh" ]
-run = [ "bash", ".cozeproj/scripts/deploy_run.sh" ]
+build = [ "bash", "scripts/coze-build.sh" ]
+run = [ "bash", "scripts/coze-start.sh" ]
 deps = [ "git" ]
