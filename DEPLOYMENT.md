@@ -1,5 +1,7 @@
 # 构建与上线
 
+Coze 原项目通过 `.coze` 调用 `scripts/coze-build.sh` 和 `scripts/coze-start.sh`，生产部署构建 H5 和后端；微信/抖音仍由独立构建命令及 CI 验证。启动入口读取平台已有部署端口，保留原项目模型身份，不覆盖环境变量。
+
 使用 Node.js 24、pnpm 9.0.0。执行 `corepack pnpm install --frozen-lockfile`，随后运行：
 
 ```sh
